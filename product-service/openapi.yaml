@@ -1,0 +1,77 @@
+openapi: 3.0.3
+info:
+  title: Swagger TechableShop - OpenAPI 3.0
+  description: |-
+    This is a TechableShop API for testing deployment in AWS Cloud.
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: https://afv6et403g.execute-api.eu-west-1.amazonaws.com/
+tags:
+  - name: product
+    description: Everything about your Products
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+paths:
+  /products:
+    get:
+      tags:
+        - product
+      summary: Get all products
+      description: Return all products
+      operationId: getAllProducts
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+  /products/{productId}:
+    get:
+      tags:
+        - product
+      summary: Get product by id
+      description: Return a single product
+      operationId: getProductById
+      parameters:
+        - name: productId
+          in: path
+          description: ID of product to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 696f64e7-f3da-425d-8f5e-099f0e70ea1b
+        title:
+          type: string
+          example: MAGMINI // MINI 6-IN-1 MAGNETIC CHARGE STATION + BEDSIDE LAMP
+        description:
+          type: string
+          example: "Simplify your daily charging experience with one mini station that does it all. The MagMini 6-in-1 Wireless & Wired Charging Station is a compact and powerful charging station for all your go-to devices. It features three wireless charging spots: one magnetic floating charging stand that keeps your phone at the optimal viewing angle, an Apple Watch stand in the back, and a versatile Qi wireless charging spot at the base for your Qi-compatible earbuds. The addition of a USB port for wired charging means you can power up to 4 devices simultaneously from a single outlet without any of the clutter. This elegant, space-saving design also doubles as a bedside lamp with two brightness levels and convenient touch controls.\n\nThis MagSafe compatible floating stand securely holds your iPhone 12 or 13 in portrait or landscape mode so you can watch videos, make FaceTime calls, and more without worrying about battery life. The MagMini also comes with a MagSafe metal ring to adapt to non-MagSafe phone cases or devices with only Qi wireless charging like Android phones."
+        price:
+          type: string
+          format: float
+          example: 39.99

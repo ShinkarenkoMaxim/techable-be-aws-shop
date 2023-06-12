@@ -1,16 +1,43 @@
 import * as cdk from 'aws-cdk-lib';
+import * as apigtw2 from '@aws-cdk/aws-apigatewayv2-alpha';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import {
+  NodejsFunction,
+  NodejsFunctionProps,
+} from 'aws-cdk-lib/aws-lambda-nodejs';
 import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class ProductServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const sharedLambdaProps: Partial<NodejsFunctionProps> = {
+      runtime: cdk.aws_lambda.Runtime.NODEJS_18_X,
+    };
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'ProductServiceQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const getProductsList = new NodejsFunction(this, 'GetProductsListLambda', {
+      ...sharedLambdaProps,
+      functionName: 'getProductsList',
+      entry: 'src/handlers/getProductsList.ts',
+    });
+
+    const api = new apigtw2.HttpApi(this, 'ProductsApi', {
+      corsPreflight: {
+        allowHeaders: ['*'],
+        allowOrigins: ['*'],
+        allowMethods: [apigtw2.CorsHttpMethod.ANY],
+      },
+    });
+
+    const integration = new HttpLambdaIntegration(
+      'ProductsIntegration',
+      getProductsList
+    );
+
+    api.addRoutes({
+      path: '/products',
+      methods: [apigtw2.HttpMethod.GET],
+      integration: integration,
+    });
   }
 }
